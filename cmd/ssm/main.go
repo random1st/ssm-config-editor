@@ -192,6 +192,7 @@ func main() {
 
 	// Add the --prefix flag to the 'list' command
 	listCmd.Flags().StringVar(&prefix, "prefix", "", "Optional prefix to filter parameters")
+	listCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
 	getCmd := &cobra.Command{
 		Use:   "get <SSM_KEY>",
@@ -219,6 +220,7 @@ func main() {
 			fmt.Println(*param.Parameter.Value)
 		},
 	}
+	getCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
 	// Create a new 'delete' command
 	deleteCmd := &cobra.Command{
@@ -246,6 +248,7 @@ func main() {
 			fmt.Println("Parameter deleted successfully")
 		},
 	}
+	deleteCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
 	// Create a new 'create' command
 	createCmd := &cobra.Command{

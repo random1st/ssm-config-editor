@@ -346,6 +346,48 @@ func main() {
 	createCmd.Flags().StringVar(&format, "format", "", "Optional format (json, yaml, env) for validation")
 	createCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
+	// Create a new 'upload' command
+	uploadCmd := &cobra.Command{
+		Use:   "upload <SSM_KEY> <FILE_PATH>",
+		Short: "Upload an SSM parameter value from a file",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			ssmKey := args[0]
+			filePath := args[1]
+
+			// Read the content of the file
+			fileContent, err := os.ReadFile(filePath)
+			if err != nil {
+				fmt.Println("Error reading the file:", err)
+				return
+			}
+
+			sess, err := createSession(region)
+			if err != nil {
+				fmt.Println("Error creating session:", err)
+				return
+			}
+			ssmSvc := getSSMService(sess)
+
+			// Create or update the SSM parameter with the new value
+			_, err = ssmSvc.PutParameter(&ssm.PutParameterInput{
+				Name:      aws.String(ssmKey),
+				Value:     aws.String(string(fileContent)),
+				Type:      aws.String("String"),
+				Overwrite: aws.Bool(true),
+			})
+			if err != nil {
+				fmt.Println("Error uploading SSM parameter value:", err)
+				return
+			}
+
+			fmt.Println("SSM parameter value uploaded successfully")
+		},
+	}
+
+	// Add the 'region' flag to the 'upload' command
+	uploadCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
+
 	// Create a root command and add the 'edit' command as a subcommand
 	rootCmd := &cobra.Command{Use: "ssm"}
 	rootCmd.AddCommand(listCmd)
@@ -353,6 +395,7 @@ func main() {
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(editCmd)
 	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(uploadCmd)
 
 	// Execute the root command
 	if err := rootCmd.Execute(); err != nil {

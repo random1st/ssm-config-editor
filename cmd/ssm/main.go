@@ -29,7 +29,7 @@ func getSSMSvc(region string) (*ssm.SSM, error) {
 func main() {
 
 	// Define and parse command-line flags
-	var region, format, prefix string
+	var region, format, prefix, from string
 
 	// Create a new 'edit' command
 	editCmd := &cobra.Command{
@@ -136,7 +136,7 @@ func main() {
 			from, _ := cmd.Flags().GetString("from")
 
 			if err := commands.CreateParameter(ssmSvc, ssmKey, from, format); err != nil {
-				fmt.Println(err)
+				fmt.Println("Error creating parameter:", err)
 				return
 			}
 		},
@@ -144,6 +144,7 @@ func main() {
 
 	// Add the 'format' flag to the 'create' command
 	createCmd.Flags().StringVar(&format, "format", "", "Optional format (json, yaml, env) for validation")
+	createCmd.Flags().StringVar(&from, "from", "", "Optional source key for the parameter value")
 	createCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
 	// Create a new 'upload' command
@@ -182,7 +183,7 @@ func main() {
 
 	// Execute the root command
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Println("Error executing root command:", err)
 		os.Exit(1)
 	}
 }

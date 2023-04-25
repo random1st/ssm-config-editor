@@ -13,6 +13,11 @@ import (
 	"github.com/random1st/ssm-config-editor/internal/commands"
 )
 
+var (
+	version   string
+	buildDate string
+)
+
 func getSSMSvc(region string) (*ssm.SSM, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region)},
@@ -27,11 +32,17 @@ func getSSMSvc(region string) (*ssm.SSM, error) {
 }
 
 func main() {
-
-	// Define and parse command-line flags
 	var region, format, prefix, from string
 
-	// Create a new 'edit' command
+	versionCmd := &cobra.Command{
+		Use:   "version",
+		Short: "Print the version number and build date",
+		Long:  "Print the version number and build date",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("ssm-config-editor %s, build date: %s\n", version, buildDate)
+		},
+	}
+
 	editCmd := &cobra.Command{
 		Use:   "edit <SSM_KEY>",
 		Short: "Edit an SSM key",
@@ -40,7 +51,6 @@ func main() {
 			ssmSvc, _ := getSSMSvc(region)
 			ssmKey := args[0]
 
-			// Call the refactored EditParameter function
 			err := commands.EditParameter(ssmSvc, ssmKey, format)
 			if err != nil {
 				fmt.Println("Error editing SSM key:", err)
@@ -51,11 +61,9 @@ func main() {
 		},
 	}
 
-	// Add flags to the 'edit' command
 	editCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 	editCmd.Flags().StringVar(&format, "format", "", "Optional format (json, yaml, env) for validation")
 
-	// Create a new 'list' command
 	listCmd := &cobra.Command{
 		Use:   "list",
 		Short: "List SSM parameters",
@@ -105,7 +113,6 @@ func main() {
 
 	getCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
-	// Create a new 'delete' command
 	deleteCmd := &cobra.Command{
 		Use:   "delete <SSM_KEY>",
 		Short: "Delete an SSM parameter",
@@ -124,7 +131,6 @@ func main() {
 	}
 	deleteCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
-	// Create a new 'create' command
 	createCmd := &cobra.Command{
 		Use:   "create <SSM_KEY>",
 		Short: "Create a new SSM parameter",
@@ -142,12 +148,10 @@ func main() {
 		},
 	}
 
-	// Add the 'format' flag to the 'create' command
 	createCmd.Flags().StringVar(&format, "format", "", "Optional format (json, yaml, env) for validation")
 	createCmd.Flags().StringVar(&from, "from", "", "Optional source key for the parameter value")
 	createCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
-	// Create a new 'upload' command
 	uploadCmd := &cobra.Command{
 		Use:   "upload <SSM_KEY> <FILE_PATH>",
 		Short: "Upload an SSM parameter value from a file",
@@ -158,7 +162,6 @@ func main() {
 			ssmKey := args[0]
 			filePath := args[1]
 
-			// Read the content of the file
 			err := commands.UploadParameterValue(ssmSvc, ssmKey, filePath)
 			if err != nil {
 				fmt.Println("Error uploading SSM parameter value:", err)
@@ -169,11 +172,10 @@ func main() {
 		},
 	}
 
-	// Add the 'region' flag to the 'upload' command
 	uploadCmd.Flags().StringVar(&region, "region", "us-east-1", "AWS region")
 
-	// Create a root command and add the 'edit' command as a subcommand
 	rootCmd := &cobra.Command{Use: "ssm"}
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(createCmd)

@@ -67,7 +67,7 @@ func ValidateFormat(content []byte, format string) error {
 		if !IsValidENV(string(content)) {
 			return fmt.Errorf("invalid env")
 		}
-	case "":
+	case "text":
 		// No format specified, skip validation
 	default:
 		return fmt.Errorf("invalid format")

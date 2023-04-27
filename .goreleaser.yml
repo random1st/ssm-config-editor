@@ -9,7 +9,7 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - main: ./cmd/ssm
+  - main: ./cmd/ssm/main.go
     binary: ssm
     goos:
       - darwin

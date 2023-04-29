@@ -2,7 +2,7 @@ project_name: ssm
 release:
   github:
     owner: random1st
-    name: github.com/random1st/ssm-config-editor
+    name: ssm-config-editor
   draft: false
   prerelease: false
 before:
@@ -11,7 +11,7 @@ before:
 builds:
   - main: ./cmd/ssm
     dir: .
-    binary: ssm
+    binary: ssmgt
     goos:
       - darwin
       - linux

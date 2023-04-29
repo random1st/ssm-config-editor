@@ -10,6 +10,7 @@ before:
     - go mod tidy
 builds:
   - main: ./cmd/ssm
+    dir: .
     binary: ssm
     goos:
       - darwin

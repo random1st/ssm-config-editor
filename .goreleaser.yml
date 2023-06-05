@@ -4,7 +4,6 @@ release:
     owner: random1st
     name: ssm-config-editor
   draft: false
-  prerelease: false
 before:
   hooks:
     - go mod tidy

@@ -37,7 +37,7 @@ func IsValidENV(data string) bool {
 }
 
 func DetectFormat(content []byte) string {
-	if json.Valid(content) {
+	if IsValidJSON(string(content)) {
 		return "json"
 	}
 
@@ -69,6 +69,7 @@ func ValidateFormat(content []byte, format string) error {
 		}
 	case "text":
 		// No format specified, skip validation
+		return nil
 	default:
 		return fmt.Errorf("invalid format")
 	}

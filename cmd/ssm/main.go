@@ -48,6 +48,7 @@ func main() {
 		Short: "Edit an SSM key",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+
 			ssmSvc, _ := getSSMSvc(region)
 			ssmKey := args[0]
 
@@ -68,6 +69,7 @@ func main() {
 		Use:   "list",
 		Short: "List SSM parameters",
 		Run: func(cmd *cobra.Command, args []string) {
+
 			ssmSvc, _ := getSSMSvc(region)
 			parameters, err := commands.ListParameters(ssmSvc, prefix)
 			if err != nil {
@@ -97,6 +99,7 @@ func main() {
 		Short: "Get an SSM parameter value",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+
 			ssmSvc, _ := getSSMSvc(region)
 			ssmKey := args[0]
 
@@ -118,6 +121,7 @@ func main() {
 		Short: "Delete an SSM parameter",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+
 			ssmSvc, _ := getSSMSvc(region)
 			ssmKey := args[0]
 
@@ -136,10 +140,10 @@ func main() {
 		Short: "Create a new SSM parameter",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+
 			ssmSvc, _ := getSSMSvc(region)
 
 			ssmKey := args[0]
-			from, _ := cmd.Flags().GetString("from")
 
 			if err := commands.CreateParameter(ssmSvc, ssmKey, from, format); err != nil {
 				fmt.Println("Error creating parameter:", err)
@@ -157,6 +161,8 @@ func main() {
 		Short: "Upload an SSM parameter value from a file",
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
+			region, _ := cmd.Flags().GetString("region")
+
 			ssmSvc, _ := getSSMSvc(region)
 
 			ssmKey := args[0]

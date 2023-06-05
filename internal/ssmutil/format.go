@@ -37,22 +37,23 @@ func IsValidENV(data string) bool {
 }
 
 func DetectFormat(content []byte) string {
+	var format string
 	if IsValidJSON(string(content)) {
-		return "json"
+		format = "json"
+	} else if IsValidYAML(string(content)) {
+		format = "yaml"
+	} else if IsValidENV(string(content)) {
+		format = "env"
+	} else {
+		format = "text"
 	}
+	fmt.Println("Detected format:", format)
+	return format
 
-	if IsValidYAML(string(content)) {
-		return "yaml"
-	}
-
-	if IsValidENV(string(content)) {
-		return "env"
-	}
-
-	return "text"
 }
 
 func ValidateFormat(content []byte, format string) error {
+	fmt.Println("Validating format:", format)
 	switch strings.ToLower(format) {
 	case "json":
 		if !json.Valid(content) {

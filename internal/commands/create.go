@@ -23,6 +23,7 @@ func CreateParameter(ssmSvc *ssm.SSM, ssmKey, from, format string) error {
 		}
 		fromValue = *fromParam.Parameter.Value
 		if format == "" {
+			fmt.Println("Format not specified, detecting format from '--from' value")
 			format = ssmutil.DetectFormat([]byte(*fromParam.Parameter.Value))
 		}
 	}
@@ -58,7 +59,9 @@ func CreateParameter(ssmSvc *ssm.SSM, ssmKey, from, format string) error {
 		}
 
 		// Validate the updated content based on the specified format
-		err = ssmutil.ValidateFormat(newValue, format)
+		if format != "" {
+			err = ssmutil.ValidateFormat(newValue, format)
+		}
 		if err != nil {
 			fmt.Println("Error validating created file:", err)
 			fmt.Println("Please try again.")

@@ -67,12 +67,18 @@ func CreateParameter(ssmSvc *ssm.SSM, ssmKey, from, format string) error {
 			fmt.Println("Please try again.")
 			continue
 		}
+		// check parameter size
+		tier := ssm.ParameterTierStandard
+		if len(newValue) > 4096 {
+			tier = ssm.ParameterTierAdvanced
+		}
 
 		_, err = ssmSvc.PutParameter(&ssm.PutParameterInput{
 			Name:      aws.String(ssmKey),
 			Value:     aws.String(string(newValue)),
 			Type:      aws.String("String"),
 			Overwrite: aws.Bool(false),
+			Tier:      aws.String(tier),
 		})
 		if err != nil {
 			return fmt.Errorf("Error creating SSM parameter: %v", err)
